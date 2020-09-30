@@ -35,7 +35,9 @@ export class ProfileService {
     let profile: ProfileData = {
       username: _profile.username,
       bio: _profile.bio,
-      image: _profile.image
+      image: _profile.image,
+      points: _profile.points
+
     };
 
     const follows = await this.followsRepository.findOne( {followerId: id, followingId: _profile.id});
@@ -72,7 +74,9 @@ export class ProfileService {
       username: followingUser.username,
       bio: followingUser.bio,
       image: followingUser.image,
-      following: true
+      following: true,
+      points: followingUser.points
+
     };
 
     return {profile};
@@ -95,7 +99,9 @@ export class ProfileService {
       username: followingUser.username,
       bio: followingUser.bio,
       image: followingUser.image,
-      following: false
+      following: false,
+      points: followingUser.points
+
     };
 
     return {profile};

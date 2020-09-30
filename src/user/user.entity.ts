@@ -25,6 +25,9 @@ export class UserEntity {
   @Column()
   password: string;
 
+  @Column({default: 0})
+  points: number;
+
   @BeforeInsert()
   async hashPassword() {
     this.password = await argon2.hash(this.password);

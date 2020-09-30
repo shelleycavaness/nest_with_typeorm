@@ -10,7 +10,7 @@ import { ValidationPipe } from '../shared/pipes/validation.pipe';
 import {
   ApiBearerAuth, ApiTags
 } from '@nestjs/swagger';
-
+//this is where a user manages her own profile
 @ApiBearerAuth()
 @ApiTags('user')
 @Controller()
@@ -20,16 +20,21 @@ export class UserController {
 
   @Get('user')
   async findMe(@User('email') email: string): Promise<UserRO> {
+    console.log('toto :>> has an email UserData', this, email);
+
     return await this.userService.findByEmail(email);
   }
 
   @Put('user')
   async update(@User('id') userId: number, @Body('user') userData: UpdateUserDto) {
+    console.log('toto :>> has an email UserData', this, userId);
+    console.log('/////////////', userId);
+
     return await this.userService.update(userId, userData);
   }
 
   @UsePipes(new ValidationPipe())
-  @Post('users')
+  @Post('users') //you must post a user object with your info inside
   async create(@Body('user') userData: CreateUserDto) {
     return this.userService.create(userData);
   }

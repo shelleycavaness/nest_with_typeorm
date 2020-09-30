@@ -36,7 +36,6 @@ export class UserService {
   }
 
   async create(dto: CreateUserDto): Promise<UserRO> {
-
     // check uniqueness of username/email
     const {username, email, password} = dto;
     const qb = await getRepository(UserEntity)
@@ -60,6 +59,7 @@ export class UserService {
     newUser.articles = [];
 
     const errors = await validate(newUser);
+    console.log('errors in user.service for validating new users >>>>>> ', errors);
     if (errors.length > 0) {
       const _errors = {username: 'Userinput is not valid.'};
       throw new HttpException({message: 'Input data validation failed', _errors}, HttpStatus.BAD_REQUEST);
@@ -120,7 +120,8 @@ export class UserService {
       email: user.email,
       bio: user.bio,
       token: this.generateJWT(user),
-      image: user.image
+      image: user.image,
+      points: user.points
     };
 
     return {user: userRO};

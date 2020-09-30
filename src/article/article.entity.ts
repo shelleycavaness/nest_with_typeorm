@@ -20,6 +20,24 @@ export class ArticleEntity {
   @Column({default: ''})
   body: string;
 
+  @Column()
+  image: string;
+
+  @Column()
+  gamePoints: number;
+
+  @Column()
+  category: string;
+
+  @Column()
+  actionKw: number;
+
+  @Column()
+  actionCo2: number;
+
+  @Column()
+  actionH2O: number;
+
   @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
   created: Date;
 
