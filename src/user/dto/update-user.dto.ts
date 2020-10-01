@@ -3,6 +3,7 @@ export class UpdateUserDto {
   readonly email: string;
   readonly bio: string;
   readonly image: string;
-  readonly points: number;
+  // we need to udate the users points
+  readonly points: number;  
 
 }

@@ -24,11 +24,12 @@ export class UserController {
 
     return await this.userService.findByEmail(email);
   }
-
+//*modify a user accoring to the UpdateUserDto*///
   @Put('user')
   async update(@User('id') userId: number, @Body('user') userData: UpdateUserDto) {
-    console.log('toto :>> has an email UserData', this, userId);
-    console.log('/////////////', userId);
+    // console.log('toto :>> has an email UserData', this);
+    // console.log('userdata 77777777777777777777777777777', userData)
+    // console.log('userID ///////////////////', userId);
 
     return await this.userService.update(userId, userData);
   }

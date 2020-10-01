@@ -39,4 +39,11 @@ export class UserEntity {
 
   @OneToMany(type => ArticleEntity, article => article.author)
   articles: ArticleEntity[];
+
+  /***********should this be in the user Enitity class? *******************/
+  /***********A user had finished N actions : list those completed actions*******************/
+  /***********How many users have challenge #1? *******************/
+// @ManyToMany(type => DefiEntity)
+// @JoinTable()
+// defiEntities: DefiEntity[];
 }
