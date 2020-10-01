@@ -2,6 +2,7 @@ import { Get, Post, Delete, Param, Controller } from '@nestjs/common';
 import { Request } from 'express';
 import { ProfileService } from './profile.service';
 import { ProfileRO } from './profile.interface';
+import { UserEntity } from '../user/user.entity';
 import { User } from '../user/user.decorator';
 import { UserEntity } from '../user/user.entity';
 

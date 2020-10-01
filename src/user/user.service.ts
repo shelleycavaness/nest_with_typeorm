@@ -77,6 +77,7 @@ export class UserService {
     delete toUpdate.favorites;
 
     let updated = Object.assign(toUpdate, dto);
+    // console.log('updated 111111111111111111111111111111111111111', updated)
     return await this.userRepository.save(updated);
   }
 
