@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { ProfileService } from './profile.service';
 import { ProfileRO } from './profile.interface';
 import { User } from '../user/user.decorator';
+import { UserEntity } from '../user/user.entity';
 
 import {
   ApiBearerAuth, ApiTags,
@@ -18,6 +19,11 @@ export class ProfileController {
   @Get(':username')
   async getProfile(@User('id') userId: number, @Param('username') username: string): Promise<ProfileRO> {
     return await this.profileService.findProfile(userId, username);
+  }
+  /***************get all profiles************/
+  @Get()
+  async getAll(): Promise<UserEntity[]> {
+    return await this.profileService.findAll();
   }
 
   @Post(':username/follow')
