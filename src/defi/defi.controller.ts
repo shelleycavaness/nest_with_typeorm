@@ -45,8 +45,9 @@ export class DefiController {
 
   //**************get an item by id *******************//
   @Get('/:id')
-  async getDefi(id: number,): Promise<{ defi: DefiEntity }> {
-    console.log('toto :>> has defiEntity', this, id);
+  async getDefi(@Param('id') id: number): Promise<DefiEntity> {
+    // console.log('toto :>> has defiEntity', this);
+    // console.log('000000000000000000000000000000000000000 the id',  id);
     return await this.defiService.findDefi(id);
   }
 

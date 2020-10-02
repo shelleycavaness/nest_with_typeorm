@@ -59,10 +59,14 @@ export class DefiService {
 
   //**************get an item by id *******************//
 
-  async findDefi(id: number): Promise<{defi: DefiEntity}> {
-    // console.log('toto :>> has an email UserData', this, id);
-    const defi = await this.defiRepository.findOne({id: id});
-    return {defi}
+  async findDefi(id: number): Promise< DefiEntity> {
+    console.log('toto :>> has an email UserData',  id);
+    const defi = await this.defiRepository.findOne(id);
+    if (!defi) {
+      throw new console.error('ENTITY_NOT_FOUND', `The defi with the id ${id} doesn't exist`);
+    }
+    console.log('defi=================================', defi)
+    return defi
   }
 
 
