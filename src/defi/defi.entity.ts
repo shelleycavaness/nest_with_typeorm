@@ -8,28 +8,28 @@ export class DefiEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({default: ''})
   category: string;
 
-  @Column()
+  @Column({default: ''})
   title: string;
 
   @Column({default: ''})
   description: string;
 
-  @Column()
+  @Column({default: ''})
   image: string;
 
-  @Column()
+  @Column({default: 0})
   gamePoints: number;
 
-  @Column()
+  @Column({default: 0})
   actionKw: number;
 
-  @Column()
+  @Column({default: 0})
   actionCo2: number;
 
-  @Column()
+  @Column({default: 0})
   actionH2O: number;
 
   // @ManyToMany(type => UserEntity)
