@@ -23,7 +23,8 @@ export class DefiController {
   }
 
   //**************create an item *******************//
-  @ApiOperation({ summary: 'Create a defi' })
+  //****rememeber that you have to send a defi object ***********///
+  @ApiOperation({ summary: 'Create a defi object' })
   @ApiResponse({ status: 200, description: 'posts defi.'})
   @ApiResponse({ status: 404, description: 'Not found'})
   @ApiResponse({ status: 500, description: 'Internal server error' })
@@ -33,21 +34,24 @@ export class DefiController {
   }
 
 //**************update an item *******************//
-  @ApiOperation({ description: 'Update defi', operationId: 'PUT /defi' })
+  @ApiOperation({ summary: 'Update defi', operationId: 'PUT /defi' })
   @ApiResponse({ status: 200, description: 'updated a defi by id.'})
   @ApiResponse({ status: 404, description: 'Not found'})
   @ApiResponse({ status: 500, description: 'Internal server error' })
   @Put('/:id')
   async update(@Param('id') id: number, @Body('defi') defiData: UpdateDefiDto) {
-    // console.log('toto :>> has an email UserData', this);
+   
     return await this.defiService.update(id, defiData);
   }
 
   //**************get an item by id *******************//
+  @ApiOperation({ summary: 'find a defi by id' })
+  @ApiResponse({ status: 200, description: 'updated a defi by id.'})
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+
   @Get('/:id')
   async getDefi(@Param('id') id: number): Promise<DefiEntity> {
-    // console.log('toto :>> has defiEntity', this);
-    // console.log('000000000000000000000000000000000000000 the id',  id);
+   
     return await this.defiService.findDefi(id);
   }
 

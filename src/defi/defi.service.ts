@@ -24,8 +24,8 @@ export class DefiService {
 
 //*************  create a new defi           *****************// 
   async create( defiData: CreateDefiDto): Promise<DefiEntity> {
-    console.log('defiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii', )
     const { title, description, image,  } = defiData;
+
    // create new defi
     let defi = new DefiEntity();
     defi.title = title;
@@ -65,7 +65,6 @@ export class DefiService {
     if (!defi) {
       throw new console.error('ENTITY_NOT_FOUND', `The defi with the id ${id} doesn't exist`);
     }
-    console.log('defi=================================', defi)
     return defi
   }
 
