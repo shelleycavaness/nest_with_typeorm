@@ -10,6 +10,7 @@ import { validate } from 'class-validator';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { HttpStatus } from '@nestjs/common';
 import * as argon2 from 'argon2';
+import { DefiEntity } from '../defi/defi.entity';
 
 @Injectable()
 export class UserService {
@@ -21,9 +22,9 @@ export class UserService {
   async findAll(): Promise<UserEntity[]> {
     return await this.userRepository.find();
   }
-
-  async findOne({email, password}: LoginUserDto): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({email});
+  /********** find user by email and password ************/
+  async findMyUser({email, password}: LoginUserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({email}); 
     if (!user) {
       return null;
     }
@@ -101,6 +102,16 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
+  async findUserActions(id :number): Promise<DefiEntity[]> {
+    const qb = await getRepository(DefiEntity)
+    .createQueryBuilder('defi')
+    .leftJoinAndSelect("defi.users", "user")
+    .getMany()
+    console.log('qb======================', qb)
+    return qb
+
+  }
+
   public generateJWT(user) {
     let today = new Date();
     let exp = new Date(today);
@@ -124,7 +135,6 @@ export class UserService {
       image: user.image,
       points: user.points
     };
-
     return {user: userRO};
   }
 }

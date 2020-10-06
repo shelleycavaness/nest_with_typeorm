@@ -2,6 +2,7 @@ import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, JoinTable, ManyToM
 import { IsEmail } from 'class-validator';
 import * as argon2 from 'argon2';
 import { ArticleEntity } from '../article/article.entity';
+import { DefiEntity } from "../defi/defi.entity";
 
 @Entity('user')
 export class UserEntity {
@@ -40,10 +41,11 @@ export class UserEntity {
   @OneToMany(type => ArticleEntity, article => article.author)
   articles: ArticleEntity[];
 
-  /***********should this be in the user Enitity class? *******************/
+  /***********joins user Enitity class to the DefiEntity? *******************/
+  @ManyToMany(type => DefiEntity)
+  @JoinTable()
+  hasActions: DefiEntity[];
+}
   /***********A user had finished N actions : list those completed actions*******************/
   /***********How many users have challenge #1? *******************/
-// @ManyToMany(type => DefiEntity)
-// @JoinTable()
-// defiEntities: DefiEntity[];
-}
+

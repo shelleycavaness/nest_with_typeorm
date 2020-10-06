@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, ManyToOne, OneToMany, JoinColumn, AfterUpdate, BeforeUpdate } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, ManyToOne, OneToMany, JoinColumn, AfterUpdate, BeforeUpdate } from 'typeorm';
 import { UserEntity } from '../user/user.entity';
 import { Comment } from './comment.entity';
 
@@ -61,4 +61,8 @@ export class ArticleEntity {
 
   @Column({default: 0})
   favoriteCount: number;
+
+  // @ManyToMany(type => UserEntity)
+  // @JoinTable()
+  // actions: UserEntity[];
 }

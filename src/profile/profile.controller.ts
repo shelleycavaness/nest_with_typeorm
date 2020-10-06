@@ -15,7 +15,7 @@ import {
 export class ProfileController {
 
   constructor(private readonly profileService: ProfileService) {}
-
+ /***************get by username************/
   @Get(':username')
   async getProfile(@User('id') userId: number, @Param('username') username: string): Promise<ProfileRO> {
     return await this.profileService.findProfile(userId, username);
