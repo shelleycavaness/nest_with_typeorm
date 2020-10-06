@@ -1,14 +1,15 @@
-import { Get, Post, Body, Put, Delete, Logger, Param, Controller,  } from '@nestjs/common';
+import { Get, Post, Body, Put, Delete, Query, Logger, Param, Controller,  } from '@nestjs/common';
 import { Request } from 'express';
 import { DefiService } from './defi.service';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DefiEntity } from './defi.entity';
 import { CreateDefiDto, UpdateDefiDto } from './create-defi-dto'
+import { User } from '../user/user.decorator';
+
 
 @ApiBearerAuth()
 @ApiTags('defi')
 @Controller('defi')
-
 export class DefiController {
   constructor(private readonly defiService: DefiService) {}
 
@@ -54,5 +55,18 @@ export class DefiController {
    
     return await this.defiService.findDefi(id);
   }
+
+  /**************    user has defi endpoints  ***************/
+    /**********   get all defis by a user ************/
+
+    @ApiOperation({ summary: 'Get all defi from a user' })
+    @ApiResponse({ status: 200, description: 'Return users defi.'})
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @Get('toto')
+    async getUserFeed(@User('id') userId: number, @Query() query): Promise<DefiEntity[]> {
+      return await this.defiService.findUserActions(1);
+    }
+
+
 
 }

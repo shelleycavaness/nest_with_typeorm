@@ -67,8 +67,22 @@ export class DefiService {
     }
     return defi
   }
+  //**************get all user with defi  id *******************//
+  async findUserActions(userId: number): Promise< DefiEntity[]>{
+    // console.log('userId///////////', userId)
+    // const user = await this.userRepository.findOne(userId);
 
+    const qb = await getRepository(DefiEntity)
+      .createQueryBuilder('defi')
+      .leftJoinAndSelect("defi.user", "user")
+      .getMany()
+      // .where('(:ids)', {userId})
 
+    // const defiCount = await qb.getCount()
+    console.log('qb======================', qb)
+    return qb
+
+  }
 
   
 
