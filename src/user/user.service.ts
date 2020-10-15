@@ -5,11 +5,12 @@ import { UserEntity } from './user.entity';
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
 const jwt = require('jsonwebtoken');
 import { SECRET } from '../config';
-import { UserRO } from './user.interface';
+import { UserRO, UserWithActionsRO } from './user.interface';
 import { validate } from 'class-validator';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { HttpStatus } from '@nestjs/common';
 import * as argon2 from 'argon2';
+import { DefiEntity } from '../defi/defi.entity';
 
 @Injectable()
 export class UserService {
@@ -21,20 +22,19 @@ export class UserService {
   async findAll(): Promise<UserEntity[]> {
     return await this.userRepository.find();
   }
-
-  async findOne({email, password}: LoginUserDto): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({email});
+  /********** find user by email and password ************/
+  async findMyUser({email, password}: LoginUserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({email}); 
     if (!user) {
       return null;
     }
-
     if (await argon2.verify(user.password, password)) {
       return user;
     }
 
     return null;
   }
-
+  /********** create a unique user ************/
   async create(dto: CreateUserDto): Promise<UserRO> {
     // check uniqueness of username/email
     const {username, email, password} = dto;
@@ -77,6 +77,7 @@ export class UserService {
     delete toUpdate.favorites;
 
     let updated = Object.assign(toUpdate, dto);
+    // console.log('updated 111111111111111111111111111111111111111', updated)
     return await this.userRepository.save(updated);
   }
 
@@ -84,6 +85,15 @@ export class UserService {
     return await this.userRepository.delete({ email: email});
   }
 
+  // async findById2(id: number): Promise<UserWithActionsRO>{
+  //   const user = await this.userRepository.findOne(id);
+  //   if (!user) {
+  //     const errors = {User: ' not found'};
+  //     throw new HttpException({errors}, 401);
+  //   }
+
+  //   return this.buildUserRO(user);
+  // }
   async findById(id: number): Promise<UserRO>{
     const user = await this.userRepository.findOne(id);
 
@@ -98,6 +108,17 @@ export class UserService {
   async findByEmail(email: string): Promise<UserRO>{
     const user = await this.userRepository.findOne({email: email});
     return this.buildUserRO(user);
+  }
+
+  async findUserActions(id: number): Promise<UserWithActionsRO[]> {
+    console.log('service id===========', id)
+    const userRepository = getRepository(UserEntity)
+    const userWithActions = await userRepository.find({ 
+      relations: ["hasActions"], //from user.entity  -hasActions
+      where: { id: id }
+    }); 
+     return userWithActions
+
   }
 
   public generateJWT(user) {
@@ -123,7 +144,6 @@ export class UserService {
       image: user.image,
       points: user.points
     };
-
     return {user: userRO};
   }
 }
