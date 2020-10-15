@@ -110,18 +110,13 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
-  async findUserActions(id: number): Promise<UserEntity[]> {
+  async findUserActions(id: number): Promise<UserWithActionsRO[]> {
+    console.log('service id===========', id)
     const userRepository = getRepository(UserEntity)
     const userWithActions = await userRepository.find({ 
       relations: ["hasActions"], //from user.entity  -hasActions
       where: { id: id }
     }); 
-
-    // const qb = await getRepository(DefiEntity)
-    // .createQueryBuilder('defi')
-    // .leftJoinAndSelect("defi.users", "user")
-    // .getMany()
-    // console.log('qb======================', qb)
      return userWithActions
 
   }

@@ -34,25 +34,29 @@ export class UserController {
     return await this.userService.update(userId, userData);
   }
 
+  /**********   get all defis by a user with a jwt to identify the user************/
+  /** creaded a userWithActions interface, and added hasAcions list,   **/
 
-
-  /**********   get all defis by a user ************/
 
     @ApiOperation({ summary: 'Get all defi from a user' })
     @ApiResponse({ status: 200, description: 'Return users defi.'})
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @Get('player')
-    //     @Get('user/defis')
-
     async getUserDefi(@User('id') userId: number): Promise<UserWithActionsRO> {
-      // async getUserDefi(@User('id') userId: number): Promise<UserRO> {
-      console.log('userId', userId)
       const user = await this.userService.findUserActions(userId)
-      console.log('user==================', user[0].hasActions[0].description)
-      return await user[0]
-      // return await this.userService.findById(userId);
+      const userWithoutPwd = {
+        id: user[0].id,
+        username: user[0].username,
+        email: user[0].email,
+        bio: user[0].bio,
+        image: user[0].image,
+        points: user[0].points,
+        hasActions: user[0].hasActions
+      }
+      return userWithoutPwd
     }
-/**************    user is not logged in in endpoints  ***************/
+
+  /**************    user is not logged in in endpoints  ***************/
   /**********   Create a user ************/
   @UsePipes(new ValidationPipe())
   @Post('users') //you must post a user object with your info inside

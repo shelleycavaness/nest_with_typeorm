@@ -13,5 +13,11 @@ export interface UserRO {
 }
 
 export interface UserWithActionsRO {
-    hasActions: DefiEntity[]
+    id: number
+    username: string;
+    email: string
+    bio: string
+    image: string;
+    points: number;
+    hasActions: DefiEntity[];
 }
