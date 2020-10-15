@@ -1,3 +1,5 @@
+import {DefiEntity} from '../defi/defi.entity';
+
 export interface UserData {
   username: string;
   email: string;
@@ -8,4 +10,8 @@ export interface UserData {
 
 export interface UserRO {
   user: UserData;
+}
+
+export interface UserWithActionsRO {
+    hasActions: DefiEntity[]
 }
