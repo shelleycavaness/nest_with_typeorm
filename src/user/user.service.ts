@@ -5,7 +5,7 @@ import { UserEntity } from './user.entity';
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
 const jwt = require('jsonwebtoken');
 import { SECRET } from '../config';
-import { UserRO } from './user.interface';
+import { UserRO, UserWithActionsRO } from './user.interface';
 import { validate } from 'class-validator';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { HttpStatus } from '@nestjs/common';
@@ -28,14 +28,13 @@ export class UserService {
     if (!user) {
       return null;
     }
-
     if (await argon2.verify(user.password, password)) {
       return user;
     }
 
     return null;
   }
-
+  /********** create a unique user ************/
   async create(dto: CreateUserDto): Promise<UserRO> {
     // check uniqueness of username/email
     const {username, email, password} = dto;
@@ -86,6 +85,15 @@ export class UserService {
     return await this.userRepository.delete({ email: email});
   }
 
+  // async findById2(id: number): Promise<UserWithActionsRO>{
+  //   const user = await this.userRepository.findOne(id);
+  //   if (!user) {
+  //     const errors = {User: ' not found'};
+  //     throw new HttpException({errors}, 401);
+  //   }
+
+  //   return this.buildUserRO(user);
+  // }
   async findById(id: number): Promise<UserRO>{
     const user = await this.userRepository.findOne(id);
 
@@ -102,13 +110,19 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
-  async findUserActions(id :number): Promise<DefiEntity[]> {
-    const qb = await getRepository(DefiEntity)
-    .createQueryBuilder('defi')
-    .leftJoinAndSelect("defi.users", "user")
-    .getMany()
-    console.log('qb======================', qb)
-    return qb
+  async findUserActions(id: number): Promise<UserEntity[]> {
+    const userRepository = getRepository(UserEntity)
+    const userWithActions = await userRepository.find({ 
+      relations: ["hasActions"], //from user.entity  -hasActions
+      where: { id: id }
+    }); 
+
+    // const qb = await getRepository(DefiEntity)
+    // .createQueryBuilder('defi')
+    // .leftJoinAndSelect("defi.users", "user")
+    // .getMany()
+    // console.log('qb======================', qb)
+     return userWithActions
 
   }
 

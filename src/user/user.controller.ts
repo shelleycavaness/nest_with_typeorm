@@ -3,7 +3,7 @@ import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagg
 import { Request } from 'express';
 import { UserService } from './user.service';
 import { DefiEntity } from '../defi/defi.entity'
-import { UserRO } from './user.interface';
+import { UserRO, UserWithActionsRO } from './user.interface';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto';
 import { HttpException } from '@nestjs/common/exceptions/http.exception';
 import { User } from './user.decorator';
@@ -41,11 +41,15 @@ export class UserController {
     @ApiOperation({ summary: 'Get all defi from a user' })
     @ApiResponse({ status: 200, description: 'Return users defi.'})
     @ApiResponse({ status: 403, description: 'Forbidden.' })
-    @Get('user/defis')
-    async getUserFeed(@User('email') email: string, @Query() query): Promise<UserRO> {
-      // console.log('userId', userId)
-      console.log('query', query)
-      return await this.userService.findByEmail(email)
+    @Get('player')
+    //     @Get('user/defis')
+
+    async getUserDefi(@User('id') userId: number): Promise<UserWithActionsRO> {
+      // async getUserDefi(@User('id') userId: number): Promise<UserRO> {
+      console.log('userId', userId)
+      const user = await this.userService.findUserActions(userId)
+      console.log('user==================', user[0].hasActions[0].description)
+      return await user[0]
       // return await this.userService.findById(userId);
     }
 /**************    user is not logged in in endpoints  ***************/
@@ -60,6 +64,7 @@ export class UserController {
   async delete(@Param() params) {
     return await this.userService.delete(params.slug);
   }
+  
   /********** Login for a  user ************/
   @UsePipes(new ValidationPipe())
   @Post('users/login')
