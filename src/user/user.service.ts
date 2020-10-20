@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository, DeleteResult } from 'typeorm';
 import { UserEntity } from './user.entity';
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
+import { UpdateUserActionsDto } from './dto/update-user.dto'
 const jwt = require('jsonwebtoken');
 import { SECRET } from '../config';
 import { UserRO, UserWithActionsRO } from './user.interface';
@@ -16,7 +17,9 @@ import { DefiEntity } from '../defi/defi.entity';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(DefiEntity)
+    private readonly defiRepository: Repository<DefiEntity>,  
   ) {}
 
   async findAll(): Promise<UserEntity[]> {
@@ -80,20 +83,40 @@ export class UserService {
     // console.log('updated 111111111111111111111111111111111111111', updated)
     return await this.userRepository.save(updated);
   }
+ /************ add points to a user accoring to the UpdateUserDto**************/
 
+ async updateScore(id: number, dto: UpdateUserActionsDto): Promise<UserWithActionsRO[]> {
+  let toUpdateUser = await this.userRepository.findOne(id);
+  delete toUpdateUser.password;
+  const toUpdateUserScore = await this.userRepository.find({
+    relations: ["hasActions"], //from user.entity  -hasActions
+      where: { id: id }
+  })
+  let action = {
+            "id": 5,
+            "category": "",
+            "title": "Garder son smartphone",
+            "description": "Garder son smartphone le plus longtemps possible",
+            "image": "",
+            "gamePoints": 100,
+            "actionKw": 100,
+            "actionCo2": 100,
+            "actionH2O": 100
+  };
+  let cleanUPUser = toUpdateUserScore[0];
+  let addToList = cleanUPUser.hasActions.push(action);
+  console.log('cleannnnnnnnnnnnnnnnnnnnnnn', cleanUPUser, addToList)
+
+  let updated = Object.assign(toUpdateUserScore, dto);
+  // console.log('updated 111111111111111111111111111111111111111', updated)
+  // console.log('********************', updated[0].hasActions)
+  return await this.userRepository.save(updated);
+ }
+/***************     delete a user   ********************/
   async delete(email: string): Promise<DeleteResult> {
     return await this.userRepository.delete({ email: email});
   }
-
-  // async findById2(id: number): Promise<UserWithActionsRO>{
-  //   const user = await this.userRepository.findOne(id);
-  //   if (!user) {
-  //     const errors = {User: ' not found'};
-  //     throw new HttpException({errors}, 401);
-  //   }
-
-  //   return this.buildUserRO(user);
-  // }
+ 
   async findById(id: number): Promise<UserRO>{
     const user = await this.userRepository.findOne(id);
 
@@ -101,7 +124,6 @@ export class UserService {
       const errors = {User: ' not found'};
       throw new HttpException({errors}, 401);
     }
-
     return this.buildUserRO(user);
   }
 
