@@ -85,32 +85,21 @@ export class UserService {
   }
  /************ add points to a user accoring to the UpdateUserDto**************/
 
- async updateScore(id: number, dto: UpdateUserActionsDto): Promise<UserWithActionsRO[]> {
-  let toUpdateUser = await this.userRepository.findOne(id);
-  delete toUpdateUser.password;
-  const toUpdateUserScore = await this.userRepository.find({
+ async updateScore(userId: number, defiId: number): Promise<UserWithActionsRO> {
+  //find will return a list and findOne an object
+  const toUpdateUserScore = await this.userRepository.findOne({
     relations: ["hasActions"], //from user.entity  -hasActions
-      where: { id: id }
+      where: { id :userId }
   })
-  let action = {
-            "id": 5,
-            "category": "",
-            "title": "Garder son smartphone",
-            "description": "Garder son smartphone le plus longtemps possible",
-            "image": "",
-            "gamePoints": 100,
-            "actionKw": 100,
-            "actionCo2": 100,
-            "actionH2O": 100
-  };
-  let cleanUPUser = toUpdateUserScore[0];
-  let addToList = cleanUPUser.hasActions.push(action);
-  console.log('cleannnnnnnnnnnnnnnnnnnnnnn', cleanUPUser, addToList)
+  delete toUpdateUserScore.password;
 
-  let updated = Object.assign(toUpdateUserScore, dto);
-  // console.log('updated 111111111111111111111111111111111111111', updated)
-  // console.log('********************', updated[0].hasActions)
-  return await this.userRepository.save(updated);
+  const action = await this.defiRepository.findOne(defiId)
+  if (!action) {
+    throw Error("defi is null")
+  }
+  toUpdateUserScore.hasActions.push(action);
+  toUpdateUserScore.points += action.gamePoints; //adds the points to the user
+  return await this.userRepository.save(toUpdateUserScore);
  }
 /***************     delete a user   ********************/
   async delete(email: string): Promise<DeleteResult> {
@@ -132,15 +121,16 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
-  async findUserActions(id: number): Promise<UserWithActionsRO[]> {
+  async userWithActions(id: number): Promise<UserWithActionsRO> {
     console.log('service id===========', id)
     const userRepository = getRepository(UserEntity)
-    const userWithActions = await userRepository.find({ 
+    const findUserActions = await userRepository.findOne({ 
       relations: ["hasActions"], //from user.entity  -hasActions
       where: { id: id }
     }); 
-     return userWithActions
-
+    console.log('USER_--------------', findUserActions)
+    console.log('TOTAL POINTS---------', findUserActions.totalPoints)
+    return findUserActions
   }
 
   public generateJWT(user) {
