@@ -1,4 +1,4 @@
-import { Get, Post, Body, Put, Delete, Param, Query, Controller, UsePipes } from '@nestjs/common';
+import { Get, Post, Body, Put, Delete, Param, Query, Controller, UsePipes, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { UserService } from './user.service';
@@ -34,30 +34,43 @@ export class UserController {
     return await this.userService.update(userId, userData);
   }
 /************ add points to a user accoring to the UpdateUserDto**************/
-  @Put('user/defi')
-  async updateUserScore(@User('id') userId: number, @Body('user') userData: UpdateUserActionsDto) {
+// @ApiResponse({ status: 404, description: 'Not found', type: ErrorModel, isArray: false })
+@ApiOperation({ summary: 'Add a defi to a user' })
+@ApiResponse({ status: 200, description: 'defi added to user'})
+@ApiResponse({ status: 403, description: 'Forbidden invalid token.' })  
+@Put('user/defi/:defiId')
+  async updateUserScore(@User('id') userId: number, @Param('defiId') defiId: number) {
     console.log('controller userID ///////////////////', userId);
-    console.log('controller userdata 77777777777777777777777777777', userData)
-    return await this.userService.updateScore(userId, userData);
+    try {
+      return await this.userService.updateScore(userId, defiId);
+    } catch(error) {
+      throw new HttpException({
+        status: HttpStatus.BAD_REQUEST,
+        error: 'Defi is null',
+      }, HttpStatus.BAD_REQUEST);
+    }
   }
-
 
   /**********   get all defis by a user with a jwt to identify the user************/
   /** creaded a userWithActions interface, and added hasAcions list,   **/
   @ApiOperation({ summary: 'Get all defi from a user' })
   @ApiResponse({ status: 200, description: 'Return users defi.'})
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 403, description: 'Forbidden invalid token.' })
   @Get('player')
   async getUserDefi(@User('id') userId: number): Promise<UserWithActionsRO> {
-    const user = await this.userService.findUserActions(userId)
+    const user = await this.userService.userWithActions(userId)
     const userWithoutPwd = {
-      id: user[0].id,
-      username: user[0].username,
-      email: user[0].email,
-      bio: user[0].bio,
-      image: user[0].image,
-      points: user[0].points,
-      hasActions: user[0].hasActions
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      bio: user.bio,
+      image: user.image,
+      points: user.points,
+      totalPoints: user.totalPoints,
+      totalKw: user.totalKw,
+      totalCo2: user.totalCo2,
+      totalH2O: user.totalH2O,
+      hasActions: user.hasActions,
     }
       return userWithoutPwd
   }
