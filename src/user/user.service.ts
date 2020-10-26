@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getRepository, DeleteResult } from 'typeorm';
 import { UserEntity } from './user.entity';
 import {CreateUserDto, LoginUserDto, UpdateUserDto} from './dto';
+import { UpdateUserActionsDto } from './dto/update-user.dto'
 const jwt = require('jsonwebtoken');
 import { SECRET } from '../config';
 import { UserRO, UserWithActionsRO } from './user.interface';
@@ -16,7 +17,9 @@ import { DefiEntity } from '../defi/defi.entity';
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(DefiEntity)
+    private readonly defiRepository: Repository<DefiEntity>,  
   ) {}
 
   async findAll(): Promise<UserEntity[]> {
@@ -80,20 +83,29 @@ export class UserService {
     // console.log('updated 111111111111111111111111111111111111111', updated)
     return await this.userRepository.save(updated);
   }
+ /************ add points to a user accoring to the UpdateUserDto**************/
 
+ async updateScore(userId: number, defiId: number): Promise<UserWithActionsRO> {
+  //find will return a list and findOne an object
+  const toUpdateUserScore = await this.userRepository.findOne({
+    relations: ["hasActions"], //from user.entity  -hasActions
+      where: { id :userId }
+  })
+  delete toUpdateUserScore.password;
+
+  const action = await this.defiRepository.findOne(defiId)
+  if (!action) {
+    throw Error("defi is null")
+  }
+  toUpdateUserScore.hasActions.push(action);
+  toUpdateUserScore.points += action.gamePoints; //adds the points to the user
+  return await this.userRepository.save(toUpdateUserScore);
+ }
+/***************     delete a user   ********************/
   async delete(email: string): Promise<DeleteResult> {
     return await this.userRepository.delete({ email: email});
   }
-
-  // async findById2(id: number): Promise<UserWithActionsRO>{
-  //   const user = await this.userRepository.findOne(id);
-  //   if (!user) {
-  //     const errors = {User: ' not found'};
-  //     throw new HttpException({errors}, 401);
-  //   }
-
-  //   return this.buildUserRO(user);
-  // }
+ 
   async findById(id: number): Promise<UserRO>{
     const user = await this.userRepository.findOne(id);
 
@@ -101,7 +113,6 @@ export class UserService {
       const errors = {User: ' not found'};
       throw new HttpException({errors}, 401);
     }
-
     return this.buildUserRO(user);
   }
 
@@ -110,15 +121,16 @@ export class UserService {
     return this.buildUserRO(user);
   }
 
-  async findUserActions(id: number): Promise<UserWithActionsRO[]> {
+  async userWithActions(id: number): Promise<UserWithActionsRO> {
     console.log('service id===========', id)
     const userRepository = getRepository(UserEntity)
-    const userWithActions = await userRepository.find({ 
+    const findUserActions = await userRepository.findOne({ 
       relations: ["hasActions"], //from user.entity  -hasActions
       where: { id: id }
     }); 
-     return userWithActions
-
+    console.log('USER_--------------', findUserActions)
+    console.log('TOTAL POINTS---------', findUserActions.totalPoints)
+    return findUserActions
   }
 
   public generateJWT(user) {
