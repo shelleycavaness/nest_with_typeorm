@@ -6,9 +6,10 @@ import { UserModule } from '../user/user.module';
 import {UserEntity} from "../user/user.entity";
 import {FollowsEntity} from "./follows.entity";
 import {AuthMiddleware} from "../user/auth.middleware";
+import { DefiEntity } from '../defi/defi.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, FollowsEntity]), UserModule],
+  imports: [TypeOrmModule.forFeature([UserEntity, FollowsEntity, DefiEntity]), UserModule],
   providers: [ProfileService],
   controllers: [
     ProfileController
