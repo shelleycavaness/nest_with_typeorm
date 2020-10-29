@@ -1,3 +1,4 @@
+import {DefiEntity} from '../defi/defi.entity';
 export interface ProfileData {
   // id: number ;
   username: string;
@@ -17,6 +18,7 @@ export interface ProfileDataWithId {
   bio: string;
   points: number;
   image?: string;
+  hasActions: DefiEntity[];
 }
 
 export interface ProfileROById{

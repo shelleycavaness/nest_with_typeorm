@@ -41,21 +41,19 @@ export class ProfileService {
       bio: _profile.bio,
       image: _profile.image,
       points: _profile.points
-
     };
-
     // const follows = await this.followsRepository.findOne( {followerId: id, followingId: _profile.id});
-
     // if (id) {
     //   profile.following = !!follows;
     // }
-
     return {profile};
   }
 
 //////////find a player by id//////////////////
   async findUserById(id: number): Promise<ProfileDataWithId>{
-    const profile = await this.userRepository.findOne({id});
+    const profile = await this.userRepository.findOne(
+      {id}
+      );
     if (!profile) {
       const errors = {User: ' not found'};
       throw new HttpException({errors}, 401);
